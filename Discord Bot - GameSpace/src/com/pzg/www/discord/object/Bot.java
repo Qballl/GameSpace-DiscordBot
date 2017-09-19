@@ -21,6 +21,10 @@ public class Bot {
 	private List<String> badWords = new ArrayList<String>();
 	private List<Command> commands = new ArrayList<Command>();
 	
+	private List<Long> mutedUsers = new ArrayList<Long>();
+	
+	private Method sendMethod= new Method();
+	
 	public Bot(String token, String prefix) {
 		this.prefix = prefix;
 		Bot = createClient(token, true);
@@ -72,6 +76,22 @@ public class Bot {
 		return badWords;
 	}
 	
+	public List<Long> getMutedUsers() {
+		return mutedUsers;
+	}
+	
+	public void muteUser(long id) {
+		mutedUsers.add(id);
+	}
+	
+	public void unmuteUser(long id) {
+		mutedUsers.remove(id);
+	}
+	
+	public void setSendMethod(Method sendMethod) {
+		this.sendMethod = sendMethod;
+	}
+	
 	private IDiscordClient createClient(String token, boolean login) {
 		ClientBuilder clientBuilder = new ClientBuilder();
 		clientBuilder.withToken(token);
@@ -89,6 +109,12 @@ public class Bot {
 	
 	@EventSubscriber
 	public void onMessage(MessageReceivedEvent event) {
+		for (long id : mutedUsers) {
+			if (event.getAuthor().getLongID() == id) {
+				event.getMessage().delete();
+				return;
+			}
+		}
 		for (String badWord : badWords) {
 			if (event.getMessage().getContent().toLowerCase().contains(badWord.toLowerCase())) {
 				event.getMessage().delete();
@@ -102,11 +128,14 @@ public class Bot {
 			IChannel channel = message.getChannel();
 			IGuild guild = message.getGuild();
 			
-			String[] command = message.getContent().toLowerCase().replaceFirst(prefix, "").split(" ");
+			String[] command = message.getContent().replaceFirst(prefix, "").split(" ");
+			
 			
 			for (Command com : commands) {
 				if (command[0].equalsIgnoreCase(com.getLabel())) {
-					message.delete();
+					if (!channel.isPrivate()) {
+						message.delete();
+					}
 					
 					List<String> args = new ArrayList<String>();
 					for (String s : command) {
@@ -123,9 +152,10 @@ public class Bot {
 						channel.sendMessage(((CommandMessage) com).getReturnMessage().replace("<user>", sender.mention()));
 					}
 					
-					break;
+					return;
 				}
 			}
 		}
+		sendMethod.onMessage(event);
 	}
 }
