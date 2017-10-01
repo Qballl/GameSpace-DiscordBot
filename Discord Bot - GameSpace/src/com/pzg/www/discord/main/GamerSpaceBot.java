@@ -2,11 +2,14 @@ package com.pzg.www.discord.main;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.pzg.www.discord.object.Bot;
-import com.pzg.www.discord.object.CommandMessage;
 import com.pzg.www.discord.object.CommandMethod;
 import com.pzg.www.discord.object.Method;
+import com.pzg.www.discord.rss.Feed;
+import com.pzg.www.discord.rss.FeedMessage;
+import com.pzg.www.discord.rss.RSSFeedParser;
 import com.pzg.www.games.Connect4;
 
 import sx.blah.discord.api.events.EventSubscriber;
@@ -27,8 +30,10 @@ public class GamerSpaceBot {
 	HashMap<IUser, Boolean> c4Players = new HashMap<IUser, Boolean>();
 	Connect4 c4Game;
 	
+	long latest;
+	
 	public GamerSpaceBot(String token, String prefix) {
-		c4Game = new Connect4("", "", "");
+//		c4Game = new Connect4("", "", "");
 		
 		bot = new Bot(token, prefix);
 		registerBot();
@@ -281,6 +286,37 @@ public class GamerSpaceBot {
 				}
 			}
 		});
+	}
+	
+	public void loop() {
+		RSSFeedParser parser = new RSSFeedParser("http://tjplaysnow.ddns.net/rss-feed.xml");
+		Feed feed = parser.readFeed();
+		
+		FeedMessage message = feed.getMessages().get(feed.getMessages().size() - 1);
+		
+		for (IGuild guild : bot.getBot().getGuilds()) {
+			for (IChannel channel : guild.getChannels()) {
+				if (channel.getName().equalsIgnoreCase("bot-news")) {
+					String update = "Bot news: " + message.getTitle() + "\n"
+							+ "```"
+							+ message.getDescription()
+							+ "\nAuthor: " + message.getAuthor()
+							+ "```" + message.getLink();
+					if (!channel.getMessageHistory(1).get(0).getContent().equalsIgnoreCase(update)) {
+						System.out.println("Updating vogella news.");
+						channel.sendMessage(update);
+					}
+				}
+			}
+		}
+		
+		System.out.println("Looping");
+		
+		try {
+			Thread.sleep(TimeUnit.MINUTES.toMillis(1));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void registerBot() {
