@@ -303,14 +303,11 @@ public class GamerSpaceBot {
 							+ "\nAuthor: " + message.getAuthor()
 							+ "```" + message.getLink();
 					if (!channel.getMessageHistory(1).get(0).getContent().equalsIgnoreCase(update)) {
-						System.out.println("Updating vogella news.");
 						channel.sendMessage(update);
 					}
 				}
 			}
 		}
-		
-		System.out.println("Looping");
 		
 		try {
 			Thread.sleep(TimeUnit.MINUTES.toMillis(1));
