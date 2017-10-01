@@ -33,7 +33,6 @@ public class Connect4 {
 		for (IGuild guild : Main.gsBot.bot.getBot().getGuilds()) {
 			for (IChannel channel : guild.getChannels()) {
 				if (channel.getName().equalsIgnoreCase("connect-4") || channel.getName().equalsIgnoreCase("connect-four")) {
-					
 					channel.getMessageByID(Long.parseLong("")).edit("");
 					
 				}
