@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLConnection;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -123,9 +122,9 @@ public class RSSFeedParser {
         return result;
     }
 
-    private URLConnection read() {
+    private InputStream read() {
         try {
-            return url.toURL().openConnection();
+            return url.toURL().openStream();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
