@@ -2,8 +2,9 @@ package com.pzg.www.discord.rss;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLConnection;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -23,14 +24,14 @@ public class RSSFeedParser {
     static final String PUB_DATE = "pubDate";
     static final String GUID = "guid";
 
-    final URL url;
+    private URI url;
 
     public RSSFeedParser(String feedUrl) {
-        try {
-            this.url = new URL(feedUrl);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    	try {
+    		this.url = new URI(feedUrl);
+    	} catch (URISyntaxException e) {
+    		e.printStackTrace();
+    	}
     }
 
     public Feed readFeed() {
@@ -122,9 +123,9 @@ public class RSSFeedParser {
         return result;
     }
 
-    private InputStream read() {
+    private URLConnection read() {
         try {
-            return url.openStream();
+            return url.toURL().openConnection();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

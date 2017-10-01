@@ -15,11 +15,11 @@ public class File {
 
 	public File(String path) {
 		String loc = this.getClass().getProtectionDomain().getCodeSource().getLocation().toString().replace("consolebot.jar", "").replace("\\", "/").replace("file:", "") + path;
-		loc = loc.replace("/C:", "");
-		loc = loc.replace("/D:", "");
-		loc = loc.replace("/G:", "");
-		loc = loc.replace("/F:", "");
-		loc = loc.replace("/E:", "");
+		loc = loc.replace("/C:", "C:");
+		loc = loc.replace("/D:", "D:");
+		loc = loc.replace("/G:", "G:");
+		loc = loc.replace("/F:", "F:");
+		loc = loc.replace("/E:", "E:");
 		loc = loc.replace("/./", "/");
 		System.out.println(loc);
 		file = Paths.get(loc);
