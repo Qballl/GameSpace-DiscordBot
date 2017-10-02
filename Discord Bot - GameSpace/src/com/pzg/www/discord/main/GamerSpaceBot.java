@@ -345,7 +345,7 @@ public class GamerSpaceBot {
 	public void updateParse(String url, String channelName, String newsName) {
 		RSSFeedParser gspotParser = new RSSFeedParser(url);
 		Feed feed = gspotParser.readFeed();
-		FeedMessage message = feed.getMessages().get(feed.getMessages().size() - 1);
+		FeedMessage message = feed.getMessages().get(0);
 		for (IGuild guild : bot.getBot().getGuilds()) {
 			for (IChannel channel : guild.getChannels()) {
 				if (channel.mention().equalsIgnoreCase(channelName)) {
@@ -354,7 +354,19 @@ public class GamerSpaceBot {
 					
 					eb.withAuthorName(newsName + ": " + message.getTitle());
 					eb.withAuthorUrl(message.getLink());
-					eb.withDescription(message.getDescription());
+					
+					String description = message.getDescription();
+
+					description = description.replace("<p>", "");
+					description = description.replace("</p>", "");
+					description = description.replace("<strong>", "**");
+					description = description.replace("</strong>", "**");
+					
+					if (description.length() >= 2048) {
+						description = description.subSequence(0, 2047).toString();
+					}
+					
+					eb.withDescription(description);
 					eb.withColor(50, 255, 50);
 					eb.withFooterText(message.getAuthor());
 					

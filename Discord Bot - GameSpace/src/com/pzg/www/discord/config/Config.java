@@ -21,10 +21,8 @@ public class Config {
 			}
 		}
 		if (set) {
-			System.out.println("Set");
 			a.set(lineNum, path + ": -" + object);
 		} else {
-			System.out.println("Added");
 			a.add(path + ": -" + object);
 		}
 		conf.writeSmallTextFile(a);
